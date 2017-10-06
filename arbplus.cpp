@@ -13,18 +13,20 @@ int solver(const char *lpfilename, double *solution, int *pstatus);
 //char does_it_exist(const char *filename);
 //int parser(const char *sourcefilename, double *solution, int numsec, int *pstatus);
 int output(const char *solutionfilename, double *solution, int numsec, int status);
+int sensitivity(int *return_array, double *prices, int numscen, int numsec, double *solution, int trials = 100);
+
 int main(int argc, char* argv[])
 {
 	int retcode = 0;
 	FILE *in = NULL, *out = NULL;
 	char mybuffer[100];
-	int numsec, numscen, j, k, numnonz, solutionstatus;
+	int numsec, numscen, j, k, numnonz, solutionstatus, *hist_array;
 	double r;
 	double *p, optimalvalue, xvalue, *portfolio;
 	FILE *results = NULL;
 
-	if (argc != 3){
-		printf("Usage:  arb1.exe datafilename lpfilename\n");
+	if (argc < 3 || argc > 5){
+		printf("Usage:  arb1.exe datafilename lpfilename sensitivity_analysis[optional-any value is true] trials(optional)\n");
 		retcode = 100;
 		goto BACK;
 	}
@@ -96,8 +98,6 @@ int main(int argc, char* argv[])
 
 	fclose(out);
 
-	free(p);
-
 	/*
 	out = fopen("hidden.dat", "w");
 	fclose(out);
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 	}
 	solutionstatus = 700;
 
-	// Call to function which uses gurobi to solve the lp with given filename (argv[2]) and writes the log to mygurobi.log
+	// Call to function which uses gurobi to solve the lp with given filename (argv[2])
 	retcode = solver(argv[2], portfolio, &solutionstatus);
     /** next, read mygurobi.log **/
 
@@ -153,7 +153,21 @@ int main(int argc, char* argv[])
 	*/ 
 	retcode = output("solution.dat", portfolio, numsec, solutionstatus);
 	
+	/*perform sensitivity analysis if option selected*/
+	if (argv[3]){
+		// If user suppplied number of trials 
+		if (argc == 5){
+			retcode = sensitivity(hist_array, p, numscen, numsec, portfolio, atoi(argv[4]));
+		}
+		// default number of trials
+		else {
+			retcode = sensitivity(hist_array, p, numscen, numsec, portfolio);
+		}
+		
+	}
+
 	BACK:
+	free(p);
   	return retcode;
 }
 

@@ -28,11 +28,13 @@
     if (error) goto QUIT;
 
     // Open log file for writing
-    //log_file = fopen(logfilename, "w");
+    /*
+    log_file = fopen(logfilename, "w");
     if (!log_file){
         printf("Cannot open log file %s for writing\n", logfilename);
         exit(1);
     } 
+    */
 
     // Read model from the specified file
     error = GRBreadmodel(env, lpfilename, &model);
