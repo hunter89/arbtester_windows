@@ -10,7 +10,7 @@
 //#include <windows.h>
 
 int solver(const char *lpfilename, double *solution, int *pstatus);
-char does_it_exist(const char *filename);
+//char does_it_exist(const char *filename);
 //int parser(const char *sourcefilename, double *solution, int numsec, int *pstatus);
 int output(const char *solutionfilename, double *solution, int numsec, int status);
 int main(int argc, char* argv[])
@@ -152,11 +152,14 @@ int main(int argc, char* argv[])
 		goto BACK;
 	*/ 
 	retcode = output("solution.dat", portfolio, numsec, solutionstatus);
-BACK:
-  return retcode;
+	
+	BACK:
+  	return retcode;
 }
 
 
+
+/*
 char does_it_exist(const char *filename)
 {
 	struct stat buf;
@@ -168,4 +171,4 @@ char does_it_exist(const char *filename)
 	}
 	else return 0;
 }
-
+*/
