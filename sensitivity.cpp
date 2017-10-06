@@ -4,18 +4,17 @@
 #include <stdlib.h>
 #include <time.h>
 
-int sensitivity(int *return_array, double *prices, int numscen, int numsec, double *solution, int trials = 100){
-    int *stressed_result, i, j, k, score;
+int *sensitivity(double *prices, int numscen, int numsec, double *solution, int trials = 100){
+    int *stressed_result, i, j, k, *score;
     double *stressed_data, portfolio_val, random;
 
-    int retcode = 0;
     srand(time(0));
 
-    return_array = (int *)calloc(trials, sizeof(int));
+    score = (int *)calloc(trials, sizeof(int));
     stressed_data = (double *)calloc((1+numsec), sizeof(double));
     //stressed_result = (int *)calloc(trials*numscen, sizeof(int));
     for (i = 0; i < trials; i++){
-        score = 0;
+        score[i] = 0;
         
         //for every scenario perturb the prices of securities except cash
         for (j = 1; j <= numscen; j++){
@@ -36,13 +35,13 @@ int sensitivity(int *return_array, double *prices, int numscen, int numsec, doub
                 //portfolio_val = portfolio_val + prices[j*(1+numsec) + k]*solution[k];
             }
             //printf("portfolio value for perturbed scenario %d: %f\n", j, portfolio_val);
-            if (portfolio_val < 0) score = score + 1;
+            if (portfolio_val < 0) score[i] = score[i] + 1;
             
         }
-        return_array[i] = score;
-        printf("score for trial %d: %d\n", i, return_array[i]);
-        
+        printf("score for trial %d: %d\n", i, score[i]);
+           
     }
+    
     free(stressed_data);
-    return retcode;
+    return score;
 }

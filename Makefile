@@ -7,8 +7,8 @@ INC=/Library/gurobi751/mac64/include/
 #to make all of the files
 all: hello
 
-hello: arbplus.o output.o solver.o sensitivity.o
-		$(CC) $(CLIB) arbplus.o output.o solver.o sensitivity.o -o hello
+hello: arbplus.o output.o solver.o sensitivity.o CreateHistCsv.o
+		$(CC) $(CLIB) arbplus.o output.o solver.o sensitivity.o CreateHistCsv.o -o hello
 
 arbplus.o: arbplus.cpp
 		$(CC) $(CFLAGS) arbplus.cpp
@@ -24,6 +24,9 @@ solver.o: solver.cpp
 
 sensitivity.o: sensitivity.cpp
 		$(CC) $(CFLAGS) sensitivity.cpp
+
+CreateHistCsv.o: CreateHistCsv.cpp
+		$(CC) $(CFLAGS) CreateHistCsv.cpp
 
 clean:
 		rm -rf *o hello

@@ -13,17 +13,17 @@ int solver(const char *lpfilename, double *solution, int *pstatus);
 //char does_it_exist(const char *filename);
 //int parser(const char *sourcefilename, double *solution, int numsec, int *pstatus);
 int output(const char *solutionfilename, double *solution, int numsec, int status);
-int sensitivity(int *return_array, double *prices, int numscen, int numsec, double *solution, int trials = 100);
-
+int *sensitivity(double *prices, int numscen, int numsec, double *solution, int trials = 100);
+int CreateHistCsv(int *score_array, int trials, int numscen, const char *filename);
 int main(int argc, char* argv[])
 {
 	int retcode = 0;
 	FILE *in = NULL, *out = NULL;
 	char mybuffer[100];
-	int numsec, numscen, j, k, numnonz, solutionstatus, *hist_array;
+	int numsec, numscen, j, k, numnonz, solutionstatus, *score_arr = NULL;
 	double r;
 	double *p, optimalvalue, xvalue, *portfolio;
-	FILE *results = NULL;
+	FILE *results = NULL, *hist_csv = NULL;
 
 	if (argc < 3 || argc > 5){
 		printf("Usage:  arb1.exe datafilename lpfilename sensitivity_analysis[optional-any value is true] trials(optional)\n");
@@ -157,11 +157,13 @@ int main(int argc, char* argv[])
 	if (argv[3]){
 		// If user suppplied number of trials 
 		if (argc == 5){
-			retcode = sensitivity(hist_array, p, numscen, numsec, portfolio, atoi(argv[4]));
+			score_arr = sensitivity(p, numscen, numsec, portfolio, atoi(argv[4]));
+			retcode = CreateHistCsv(score_arr, atoi(argv[4]), numscen, "Score_histogram.csv");
 		}
 		// default number of trials
 		else {
-			retcode = sensitivity(hist_array, p, numscen, numsec, portfolio);
+			score_arr = sensitivity(p, numscen, numsec, portfolio);
+			retcode = CreateHistCsv(score_arr, 100, numscen, "Score_histogram.csv");
 		}
 		
 	}
