@@ -38,7 +38,7 @@ int *sensitivity(double *prices, int numscen, int numsec, double *solution, int 
             if (portfolio_val < 0) score[i] = score[i] + 1;
             
         }
-        printf("score for trial %d: %d\n", i, score[i]);
+        //printf("score for trial %d: %d\n", i, score[i]);
            
     }
     

@@ -5,13 +5,13 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+//#include <unistd.h>
+#include <time.h>
+#include <windows.h>
 
-//#include <windows.h>
-
-int solver(const char *lpfilename, double *solution, int *pstatus);
-//char does_it_exist(const char *filename);
-//int parser(const char *sourcefilename, double *solution, int numsec, int *pstatus);
+//int solver(const char *lpfilename, double *solution, int *pstatus);
+char does_it_exist(const char *filename);
+int parser(const char *sourcefilename, double *solution, int numsec, int *pstatus);
 int output(const char *solutionfilename, double *solution, int numsec, int status);
 int *sensitivity(double *prices, int numscen, int numsec, double *solution, int trials = 100);
 int CreateHistCsv(int *score_array, int trials, int numscen, const char *filename);
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 
 	fclose(out);
 
-	/*
+	
 	out = fopen("hidden.dat", "w");
 	fclose(out);
 
@@ -115,25 +115,25 @@ int main(int argc, char* argv[])
 	}
 
 	system(mybuffer);
-	*/
+	
 
 	/** sleep-wake cycle **/
 
-	/*
+	
 
 	for (;;){
 		if (does_it_exist("nothidden.dat")){
 			printf("\ngurobi done!\n");
-			usleep(1000000);
-			//Sleep(1000);
+			//usleep(1000000);
+			Sleep(1000);
 			break;
 		}
 		else{
-			usleep(100000);
-			//Sleep(100);
+		        //usleep(100000);
+			Sleep(100);
 		}
 	}
-	*/
+	
 
 	portfolio = (double *)calloc(1 + numsec, sizeof(double));
 	if (!portfolio){
@@ -141,29 +141,42 @@ int main(int argc, char* argv[])
 		retcode = 200; goto BACK;
 	}
 	solutionstatus = 700;
-
+	/*
 	// Call to function which uses gurobi to solve the lp with given filename (argv[2])
 	retcode = solver(argv[2], portfolio, &solutionstatus);
+	*/
+
+	
     /** next, read mygurobi.log **/
 
-	/*
+	
 	retcode = parser("mygurobi.log", portfolio, numsec, &solutionstatus);
 	if (retcode)
 		goto BACK;
-	*/ 
+	 
 	retcode = output("solution.dat", portfolio, numsec, solutionstatus);
 	
 	/*perform sensitivity analysis if option selected*/
 	if (argv[3]){
 		// If user suppplied number of trials 
 		if (argc == 5){
+		        printf("Start\n");
+		        clock_t t = clock();
 			score_arr = sensitivity(p, numscen, numsec, portfolio, atoi(argv[4]));
 			retcode = CreateHistCsv(score_arr, atoi(argv[4]), numscen, "Score_histogram.csv");
+			t = clock() - t;
+			float time = float(t)/CLOCKS_PER_SEC;
+			printf("End\n%f\n", time);
 		}
 		// default number of trials
 		else {
+		        printf("Start\n");
+		        clock_t t = clock();
 			score_arr = sensitivity(p, numscen, numsec, portfolio);
 			retcode = CreateHistCsv(score_arr, 100, numscen, "Score_histogram.csv");
+			t = clock() - t;
+		       	float time = float(t)/CLOCKS_PER_SEC;
+			printf("End\n%f\n", time);
 		}
 		
 	}
@@ -175,7 +188,7 @@ int main(int argc, char* argv[])
 
 
 
-/*
+
 char does_it_exist(const char *filename)
 {
 	struct stat buf;
@@ -187,4 +200,4 @@ char does_it_exist(const char *filename)
 	}
 	else return 0;
 }
-*/
+
